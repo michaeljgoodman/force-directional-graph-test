@@ -1,13 +1,15 @@
 use crate::graph::{Circle, Edge};
+use crate::grid::SpatialGrid;
 
-pub fn apply_gravity_and_repulsion(circles: &mut [Circle], gravity_strength: f64, repulsion_strength: f64) {
+pub fn apply_gravity_and_repulsion(circles: &mut [Circle], gravity_strength: f64, repulsion_strength: f64, grid: &SpatialGrid) {
     let circles_copy = circles.to_vec(); // Create a copy of the circles vector for safe iteration
 
-    for circle in circles {
+    for (i, circle) in circles.iter_mut().enumerate() {
         if !circle.dragging {
-            // Apply gravity between nodes
-            for other in &circles_copy {
-                if circle.id != other.id {
+            // Apply gravity between nodes using the spatial grid
+            for &other_index in grid.query(circle.x, circle.y).iter() {
+                if i != other_index {
+                    let other = &circles_copy[other_index];
                     let dx = other.x - circle.x;
                     let dy = other.y - circle.y;
                     let distance = (dx * dx + dy * dy).sqrt();
@@ -18,9 +20,10 @@ pub fn apply_gravity_and_repulsion(circles: &mut [Circle], gravity_strength: f64
                 }
             }
 
-            // Apply repulsion from other circles
-            for other in &circles_copy {
-                if circle.id != other.id {
+            // Apply repulsion from other circles using the spatial grid
+            for &other_index in grid.query(circle.x, circle.y).iter() {
+                if i != other_index {
+                    let other = &circles_copy[other_index];
                     let dx = circle.x - other.x;
                     let dy = circle.y - other.y;
                     let distance = (dx * dx + dy * dy).sqrt();

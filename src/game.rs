@@ -3,6 +3,7 @@ use sdl2::mouse::MouseButton;
 use crate::graph::{Graph, Circle};
 use crate::physics::{apply_gravity_and_repulsion, apply_spring_forces, apply_center_attraction};
 use crate::camera::Camera;
+use crate::grid::SpatialGrid;
 
 pub struct Game {
     pub graph: Graph,
@@ -18,6 +19,8 @@ pub struct Game {
     pub rest_length: f64,
     pub max_velocity: f64,
     pub attraction_strength: f64,
+    pub grid: SpatialGrid,
+    pub force_scale: f64,
 }
 
 impl Game {
@@ -32,7 +35,7 @@ impl Game {
         let circles: Vec<Circle> = graph.nodes.iter().map(|node| {
             let x = center_x + rng.gen_range(-100.0..100.0);
             let y = center_y + rng.gen_range(-100.0..100.0);
-            Circle::new(node.id, x, y, node.radius as f64, node.vx as f64, node.vy as f64)
+            Circle::new(node.id, x, y, node.radius as f64, 0.0, 0.0) // Initialize with zero velocity
         }).collect();
 
         Game {
@@ -49,6 +52,8 @@ impl Game {
             rest_length: 100.0,
             max_velocity: 5.0,
             attraction_strength: 0.001,
+            grid: SpatialGrid::new(100.0), // Initialize grid with cell size
+            force_scale: 0.01, // Start with a low force scale
         }
     }
 
@@ -112,15 +117,27 @@ impl Game {
     }
 
     pub fn update(&mut self) {
-        apply_gravity_and_repulsion(&mut self.circles, self.gravity_strength, self.repulsion_strength);
-        apply_spring_forces(&mut self.circles, &self.graph.edges, self.spring_strength, self.rest_length);
+        // Clear and populate the spatial grid
+        self.grid.clear();
+        for (i, circle) in self.circles.iter().enumerate() {
+            self.grid.insert(i, circle.x, circle.y);
+        }
+
+        // Apply physics using the grid
+        apply_gravity_and_repulsion(&mut self.circles, self.gravity_strength * self.force_scale, self.repulsion_strength * self.force_scale, &self.grid);
+        apply_spring_forces(&mut self.circles, &self.graph.edges, self.spring_strength * self.force_scale, self.rest_length);
 
         let center_x = 0.0;
         let center_y = 0.0;
-        apply_center_attraction(&mut self.circles, center_x, center_y, self.attraction_strength);
+        apply_center_attraction(&mut self.circles, center_x, center_y, self.attraction_strength * self.force_scale);
 
         for circle in &mut self.circles {
             circle.update(self.max_velocity);
+        }
+
+        // Gradually increase the force scale
+        if self.force_scale < 1.0 {
+            self.force_scale += 0.01;
         }
     }
 }

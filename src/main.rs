@@ -7,6 +7,7 @@ mod physics;
 mod game;
 mod graph;
 mod camera;
+mod grid;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
@@ -28,7 +29,7 @@ fn main() {
     let mut event_pump = sdl_context.event_pump().unwrap();
 
     // Initialize game
-    let mut game = Game::new("cb02098_user.json", 1920.0, 1200.0);
+    let mut game = Game::new("cb02098_all_output.json", 1920.0, 1200.0);
 
     'running: loop {
         let mouse_state = event_pump.mouse_state();
