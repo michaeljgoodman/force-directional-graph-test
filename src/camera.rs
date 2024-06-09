@@ -40,13 +40,13 @@ impl Camera {
         // Calculate the world coordinates under the cursor before zoom
         let (world_x_before, world_y_before) = self.screen_to_world(cursor_x, cursor_y);
 
-        // Apply the zoom
+        // Apply the zoom scale factor
         self.scale *= factor;
 
-        // Calculate the world coordinates under the cursor after zoom
+        // Calculate the world coordinates under the cursor post zoom
         let (world_x_after, world_y_after) = self.screen_to_world(cursor_x, cursor_y);
 
-        // Adjust the camera position to keep the point under the cursor constant
+        // Adjust the camera position so that the location under the cursor is consistent with the world coordinates you were pointing at
         self.x += world_x_before - world_x_after;
         self.y += world_y_before - world_y_after;
     }
