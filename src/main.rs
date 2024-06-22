@@ -11,7 +11,6 @@ mod grid;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use sdl2::mouse::{MouseButton, MouseWheelDirection};
 use std::time::Duration;
 use game::Game;
 
@@ -19,7 +18,7 @@ fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
 
-    let window = video_subsystem.window("2D Game Engine", 1920, 1200)
+    let window = video_subsystem.window("Network Diagram", 1920, 1200)
         .position_centered()
         .fullscreen_desktop()
         .build()
@@ -63,6 +62,8 @@ fn main() {
         drawing::draw_edges(&mut canvas, &game.graph.edges, &game.circles, &game.camera);
 
         canvas.present();
+        
+        // 60 FPS limit
         std::thread::sleep(Duration::from_millis(16));
     }
 }

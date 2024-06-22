@@ -1,4 +1,3 @@
-use crate::graph::Circle;
 use std::collections::HashMap;
 
 pub struct SpatialGrid {
