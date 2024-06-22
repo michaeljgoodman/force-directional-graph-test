@@ -28,3 +28,8 @@ In short:
 
 **Click and drag nodes**
 ![alt text](media/drag.png)
+
+## Todo
+- [ ] Implement minimum force, and consider bodies under limit at rest - To remove jitter
+- [ ] Implement spatial grid properly, and launch a thread per cell to calculate forces for those circles
+- [ ] Only apply forces between close cells - to an extent that we perform minimal calculations, but not to the extent that things float away from eachother (Central gravity should solve this)
